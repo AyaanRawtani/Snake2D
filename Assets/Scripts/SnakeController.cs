@@ -1,14 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class SnakeController : MonoBehaviour
 {
-    private Vector2 dir = Vector2.right;        //default direction is set to right 
+    private Vector2 dir = Vector2.right;                                        //default direction is set to right 
+    
+    public float wrapOffset = 1f;
+    
+    public GameObject leftBound;
+    public GameObject rightBound;
+    public GameObject topBound;
+    public GameObject bottomBound;
 
     private void Update()
     {
-        HandleInput();
+        HandleInput();  
     }
 
     private void HandleInput()                                                                     //transform euler angles so sprite rotates according to the dir
@@ -35,14 +43,37 @@ public class SnakeController : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()                                          //using fixed timestep in project settings for speed
+    private void FixedUpdate()                                                                   //using fixedtimestep in proj settings for speed instead of float speed 
     {
-        this.transform.position = new Vector3(
-           Mathf.Round (this.transform.position.x + dir.x),             //rounding up/down so we can have grid based movement
-           Mathf.Round (this.transform.position.y + dir.y),
-            0.0f);
-
-       
+        Vector3 newPosition = transform.position + new Vector3(dir.x, dir.y, 0);
+        newPosition = WrapPosition(newPosition);
+        transform.position = new Vector3(Mathf.Round(newPosition.x), Mathf.Round(newPosition.y), 0f);
     }
 
+    private Vector3 WrapPosition(Vector3 position)
+    {
+        if (position.x < leftBound.transform.position.x)
+        {
+            position.x = rightBound.transform.position.x - wrapOffset;
+        }
+        else if (position.x > rightBound.transform.position.x)
+        {
+            position.x = leftBound.transform.position.x + wrapOffset;
+        }
+
+        if (position.y < bottomBound.transform.position.y)
+        {
+            position.y = topBound.transform.position.y - wrapOffset;
+        }
+        else if (position.y > topBound.transform.position.y)
+        {
+            position.y = bottomBound.transform.position.y +wrapOffset;
+        }
+
+        return position;
+    }
+
+
 }
+
+
