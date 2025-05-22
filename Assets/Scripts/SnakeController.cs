@@ -1,18 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class SnakeController : MonoBehaviour
 {
-    private Vector2 dir = Vector2.right;                                        //default direction is set to right 
+    private Vector2 dir = Vector2.right;                                                          //default direction is set to right 
     
-    public float wrapOffset = 1f;
+    public float wrapOffset = 1f;                                               
     
     public GameObject leftBound;
     public GameObject rightBound;
     public GameObject topBound;
     public GameObject bottomBound;
+
+    public GameObject segmentPrefab;
+    private List<Transform> segments = new List<Transform>();
+
+    public FoodController foodController;
+
+    private void Start()
+    {
+        segments.Add(this.transform);
+    }
 
     private void Update()
     {
@@ -43,11 +54,9 @@ public class SnakeController : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()                                                                   //using fixedtimestep in proj settings for speed instead of float speed 
+    private void FixedUpdate()                                                                       
     {
-        Vector3 newPosition = transform.position + new Vector3(dir.x, dir.y, 0);
-        newPosition = WrapPosition(newPosition);
-        transform.position = new Vector3(Mathf.Round(newPosition.x), Mathf.Round(newPosition.y), 0f);
+        Move();
     }
 
     private Vector3 WrapPosition(Vector3 position)
@@ -71,6 +80,36 @@ public class SnakeController : MonoBehaviour
         }
 
         return position;
+    }
+
+    private void Move()
+    {
+        for (int i = segments.Count - 1; i >0; i--)
+        {
+            segments[i].position = segments[i - 1].position;                          //Moving each segment to the one in front of it (before it in list) hence -- 
+        }
+
+        Vector3 newPosition = transform.position + new Vector3(dir.x, dir.y, 0);
+        newPosition = WrapPosition(newPosition);                                                         //checks if any bounds have been crossed 
+        transform.position = new Vector3(Mathf.Round(newPosition.x), Mathf.Round(newPosition.y), 0f);
+    }
+
+    private void Grow()
+    {
+        GameObject newSegment = Instantiate(segmentPrefab);
+        newSegment.transform.position = segments[segments.Count - 1].position;
+        segments.Add(newSegment.transform);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Food"))
+        {
+            Grow();
+            Destroy(other.gameObject);                  //growing the snake and then destroying the food obj and then spawning new food prefab
+
+            foodController.SpawnFood(); 
+        }
     }
 
 
