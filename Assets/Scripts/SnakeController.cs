@@ -10,8 +10,10 @@ public class SnakeController : MonoBehaviour
 {
     public PlayerId playerId;
 
+ 
     private Vector2 dir = Vector2.right;
    private  Vector2 currentDir = Vector2.right;
+
     public float moveInterval = 0.1f;
 
     public float wrapOffset = 1f;                                               
@@ -28,9 +30,11 @@ public class SnakeController : MonoBehaviour
 
     private bool isGameOver = false;
 
+
     private bool hasShield = false;
 
     public GameOverController gameOverController;
+
     
 
     private void Start()
@@ -57,6 +61,7 @@ public class SnakeController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.W) && dir != Vector2.down)
             {
                 dir = Vector2.up;
+
                // transform.eulerAngles = new Vector3(0, 0, 0);
             }
             else if (Input.GetKeyDown(KeyCode.A) && dir != Vector2.right)
@@ -73,6 +78,7 @@ public class SnakeController : MonoBehaviour
             {
                 dir = Vector2.right;
               //  transform.eulerAngles = new Vector3(0, 0, 270);
+
             }
         }
         else if (playerId == PlayerId.Player2)
@@ -80,6 +86,7 @@ public class SnakeController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.UpArrow) && dir != Vector2.down)
             {
                 dir = Vector2.up;
+
                // transform.eulerAngles = new Vector3(0, 0, 0);
             }
            else  if (Input.GetKeyDown(KeyCode.LeftArrow) && dir != Vector2.right)
@@ -96,6 +103,7 @@ public class SnakeController : MonoBehaviour
             {
                 dir = Vector2.right;
                // transform.eulerAngles = new Vector3(0, 0, 270);
+
             }
 
         }
@@ -135,34 +143,33 @@ public class SnakeController : MonoBehaviour
         return position;
     }
 
-    private void Move()
-    {
+     private void Move()
+ {
 
-        if (currentDir != (dir * -1))                                               //ensuring snake can't turn 180 degrees
-        {
-            currentDir = dir;
+     if (currentDir != (dir * -1))                                               //ensuring snake can't turn 180 degrees
+     {
+         currentDir = dir;
 
-            if (currentDir == Vector2.up)                                              
-                transform.eulerAngles = new Vector3(0, 0, 0);
-            else if (currentDir == Vector2.left)
-                transform.eulerAngles = new Vector3(0, 0, 90);
-            else if (currentDir == Vector2.down)
-                transform.eulerAngles = new Vector3(0, 0, 180);
-            else if (currentDir == Vector2.right)
-                transform.eulerAngles = new Vector3(0, 0, 270);
-        }
+         if (currentDir == Vector2.up)                                              
+             transform.eulerAngles = new Vector3(0, 0, 0);
+         else if (currentDir == Vector2.left)
+             transform.eulerAngles = new Vector3(0, 0, 90);
+         else if (currentDir == Vector2.down)
+             transform.eulerAngles = new Vector3(0, 0, 180);
+         else if (currentDir == Vector2.right)
+             transform.eulerAngles = new Vector3(0, 0, 270);
+     }
 
-        for (int i = segments.Count - 1; i >0; i--)
-        {
-            segments[i].position = segments[i - 1].position;                          //Moving each segment to the one in front of it  hence -- 
-        }
+     for (int i = segments.Count - 1; i >0; i--)
+     {
+         segments[i].position = segments[i - 1].position;                          //Moving each segment to the one in front of it  hence -- 
+     }
 
-        Vector3 newPosition = transform.position + new Vector3(currentDir.x, currentDir.y, 0);
-        newPosition = WrapPosition(newPosition);                                                         //checks if any bounds have been crossed 
-        transform.position = new Vector3(Mathf.Round(newPosition.x), Mathf.Round(newPosition.y), 0f);
+     Vector3 newPosition = transform.position + new Vector3(currentDir.x, currentDir.y, 0);
+     newPosition = WrapPosition(newPosition);                                                         //checks if any bounds have been crossed 
+     transform.position = new Vector3(Mathf.Round(newPosition.x), Mathf.Round(newPosition.y), 0f);
 
-    }
-
+ }
     public void Grow(int amount)
     {
         for (int i = 0; i < amount; i++)
@@ -185,6 +192,7 @@ public class SnakeController : MonoBehaviour
         yield return new WaitForSeconds(delay);
         col.enabled = true;
     }
+
 
     public void Shrink(int amount)
     {
@@ -225,6 +233,7 @@ public class SnakeController : MonoBehaviour
             if (foodController.ContainsFood(other.gameObject))
             {
                 FoodType type = foodController.GetFoodType(other.gameObject);
+
                 
                 foodController.Eat(this, type);
 
@@ -237,11 +246,13 @@ public class SnakeController : MonoBehaviour
         else if (other.gameObject.CompareTag("Body"))
         {
           Debug.Log("Snake collided with itself.");
+
            PlayerDie();    
         }
     }
 
     public void PlayerDie()
+
     {
         if (isShieldActive())
         {
@@ -253,7 +264,9 @@ public class SnakeController : MonoBehaviour
         {
             Debug.Log("Game Over");
             isGameOver = true;
+
             gameOverController.PlayerDied();
+
         }
     }
 }
